@@ -6,7 +6,7 @@
   {:status (or status 200)
    :headers {"Content-Type" "application/edn"}
    :body (pr-str data)})
-  
+
 (defroutes handler
   (GET "/" []
        (generate-response {:hello :cleveland}))
@@ -16,4 +16,4 @@
 
 (def app
   (-> handler
-      wrap-edn-params))
+      (wrap-edn-params {:readers *data-readers*})))
