@@ -2,6 +2,19 @@
 
 A [Ring](https://github.com/mmcgrana/ring) middleware that augments :params by parsing a request body as [Extensible Data Notation](https://github.com/edn-format/edn) (EDN).
 
+The parsed EDN body is available in the request map under the :edn-params key. The EDN body can be arbitrary clojure data.
+
+If the request body is a map then the edn-params are also merged with the :params request map. If a key occurs in both edn-params and params, the original params mapping remains since the edn-params values are recorded in their own map.
+
+The handler accepts an optional reader options that are passed to the EDN read or read-string function.
+This allows parsing tagged literals, among other things:
+
+```
+(def app
+  (-> handler
+      (wrap-edn-params {:readers *data-readers*})))
+```
+
 ## Where
 
   * [Source repository](https://github.com/fogus/ring-edn) *-- patches welcomed*
@@ -12,7 +25,7 @@ A [Ring](https://github.com/mmcgrana/ring) middleware that augments :params by p
 
 In your `:dependencies` section add the following:
 
-    [fogus/ring-edn "0.2.0"]
+    [intronic/ring-edn "0.3.2"]
 
 ### Ring
 
@@ -41,7 +54,7 @@ Next, create a file in `src` called `my_awesome_service.clj` with the following:
   {:status (or status 200)
    :headers {"Content-Type" "application/edn"}
    :body (pr-str data)})
-  
+
 (defroutes handler
   (GET "/" []
        (generate-response {:hello :cleveland}))
@@ -73,18 +86,18 @@ Run this app in your console with `lein run` and test with `curl` using the foll
 ```sh
 $ curl -X GET http://localhost:8080/
 
-#=> {:hello :cleveland}                               
+#=> {:hello :cleveland}
 
-$ curl -X PUT -H "Content-Type: application/edn" \ 
+$ curl -X PUT -H "Content-Type: application/edn" \
   -d '{:name :barnabas}' \
-  http://localhost:8080/ 
+  http://localhost:8080/
 
-#=> {:hello :barnabas}%  
+#=> {:hello :barnabas}%
 ```
 
 ## Acknowledgment(s)
 
-Thanks to [Mark McGranaghan](http://markmcgranaghan.com/) for his work on Ring and [ring-json-params](https://github.com/mmcgrana/ring-json-params) on which this project was based.  
+Thanks to [Mark McGranaghan](http://markmcgranaghan.com/) for his work on Ring and [ring-json-params](https://github.com/mmcgrana/ring-json-params) on which this project was based.
 
 ## License
 
