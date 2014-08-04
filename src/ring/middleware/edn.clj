@@ -30,6 +30,6 @@
       (let [edn-params (binding [*read-eval* false] (-read-edn body read-opts))
             req* (assoc req
                    :edn-params edn-params
-                   :params (merge (:params req) edn-params))]
+                   :params (merge (if (map? edn-params) edn-params) (:params req)))]
         (handler req*))
       (handler req))))
